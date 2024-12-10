@@ -6,7 +6,13 @@ export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
 
   const addItem = (product) => {
-    setItems((prevItems) => [...prevItems, product]);
+    // Only add the product if it's not already in the cart
+    setItems((prevItems) => {
+      if (!prevItems.some((item) => item.id === product.id)) {
+        return [...prevItems, product];
+      }
+      return prevItems; // No changes if the item is already in the cart
+    });
   };
 
   const removeItem = (id) => {
@@ -20,14 +26,13 @@ export function CartProvider({ children }) {
   );
 }
 
-
 export function ProductList() {
-  const { addItem } = useContext(CartContext);
+  const { addItem, items } = useContext(CartContext);
 
   const products = [
-    { id: 1, name: "Producto 1"},
-    { id: 2, name: "Producto 2"},
-    { id: 3, name: "Producto 3"},
+    { id: 1, name: "Producto 1" },
+    { id: 2, name: "Producto 2" },
+    { id: 3, name: "Producto 3" },
   ];
 
   return (
@@ -37,9 +42,11 @@ export function ProductList() {
         {products.map((product) => (
           <li key={product.id}>
             {product.name}
-            <button onClick={() => addItem(product)}
+            <button
+              onClick={() => addItem(product)}
+              disabled={items.some((item) => item.id === product.id)} // Disable if product is in the cart
             >
-            Agregar al carrito
+              {items.some((item) => item.id === product.id) ? "En el carrito" : "Agregar al carrito"}
             </button>
           </li>
         ))}
@@ -61,9 +68,7 @@ export function Cart() {
           {items.map((item) => (
             <li key={item.id}>
               {item.name}
-              <button onClick={() => removeItem(item.id)}>
-                Eliminar
-              </button>
+              <button onClick={() => removeItem(item.id)}>Eliminar</button>
             </li>
           ))}
         </ul>

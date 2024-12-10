@@ -6,9 +6,11 @@ import AuthContext from "./AuthContext";
 import LanguageContext from "./LanguageContext";
 import { ProductList, Cart } from "./CartContext";
 import { AdminPanel } from "./PermissionsContext";
-import { useNotifications } from "./NotificationContext"; 
 import { useSettings } from "./SettingsContext";
 import { useLoading } from "./LoadingContext";
+import { NotificationProvider } from './NotificationContext';  // Asegúrate de importar el proveedor
+import NotificationList from './NotificationList';
+import AddNotificationButton from './AddNotificationButton';
 
 export default function Home() {
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -17,7 +19,6 @@ export default function Home() {
 
   const { language, setLanguage } = useContext(LanguageContext);
 
-  const { addNotification } = useNotifications(); 
 
   const { settings, updateSetting } = useSettings();
 
@@ -38,9 +39,6 @@ export default function Home() {
     setLanguage((prevLanguage) => (prevLanguage === "es" ? "en" : "es"));
   };
 
-  const handleAddNotification = () => {
-    addNotification("Producto agregado al carrito");
-  };
 
   const handleLoadData = () => {
     startLoading(); 
@@ -93,7 +91,14 @@ export default function Home() {
       <AdminPanel />
 
       <h1>Ejercicio 6: Notificaciones globales</h1>
-      <button onClick={handleAddNotification}>Agregar notificación</button> {/* Botón para agregar notificación */}
+      <NotificationProvider>
+        <div>
+          <NotificationList /> {/* Lista de notificaciones */}
+            <div>
+              <AddNotificationButton /> {/* Botón para agregar una nueva notificación */}
+            </div>
+        </div>
+      </NotificationProvider>
       
       <h1>Ejercicio 7: Sistema de Configuraciones</h1>
       <div>

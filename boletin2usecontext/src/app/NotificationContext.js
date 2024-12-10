@@ -1,59 +1,41 @@
-"use client";
-import React, { createContext, useState, useContext } from "react";
+// NotificationContext.js
+import React, { createContext, useState } from "react";
 
-
+// Creamos el contexto de las notificaciones
 const NotificationContext = createContext();
 
-
+// Proveedor del contexto de las notificaciones
 export function NotificationProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
 
-  const addNotification = (message) => {
+  // Función para agregar una notificación
+  function addNotification(message) {
+    const id = Date.now(); // ID único basado en el tiempo
     setNotifications((prevNotifications) => [
       ...prevNotifications,
-      { id: Date.now(), message },
+      { id, message },
     ]);
-  };
 
+    // Eliminamos la notificación después de 5 segundos
+    setTimeout(() => {
+      removeNotification(id);
+    }, 5000);
+  }
 
-  const removeNotification = (id) => {
+  // Función para eliminar una notificación
+  function removeNotification(id) {
     setNotifications((prevNotifications) =>
       prevNotifications.filter((notification) => notification.id !== id)
     );
-  };
+  }
 
   return (
-    <NotificationContext.Provider value={{ notifications, addNotification, removeNotification }}>
+    <NotificationContext.Provider
+      value={{ notifications, addNotification, removeNotification }}
+    >
       {children}
     </NotificationContext.Provider>
   );
 }
 
-
-export const useNotifications = () => {
-  return useContext(NotificationContext);
-};
-
-
-export function NotificationList() {
-  const { notifications, removeNotification } = useNotifications();
-
-  if (notifications.length === 0) {
-    return null; 
-  }
-
-  return (
-    <div>
-      <ul>
-        {notifications.map((notification) => (
-          <li key={notification.id}>
-            {notification.message}
-            <button onClick={() => removeNotification(notification.id)}>
-              X
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+export default NotificationContext;
